@@ -3,49 +3,69 @@ $date = Get-Date
 $timestamp = Get-Date -format yyyyMMdd-HHmmss
 
 ######################################## Database info ####################################
-$table_databases = @("db_test1","db_test2","db_test3","db_test4","db_test5","db_test6")
+$tableDatabases = @("test0","test1","test2","test3","test4")
 $database = 0
+$textCheck = 0
+$textDump = 0
 
 ######################################## Connect info #####################################
-$mysqlpath = "C:\Program Files\MySQL\MySQL Server 5.5\bin\"
-$backuppath = "C:\mysql_backup\dump\"
-$logpath = "C:\mysql_backup\logs\"
+$mysqlPath = "C:\Program Files\MySQL\MySQL Server 5.5\bin\"
+$backupPath = "C:\mysql_backup\dump\"
+$errorPath = "C:\mysql_backup\error\"
+$checkPath = "C:\mysql_backup\check\"
 $username = "root"
 $password = "password"
 $hostname = "localhost"
-$errorlog = $logpath + "error" + "_" + $database + "_" + "dump.log"
 
 ######################################## Backup file info #################################
-$backupfile = $backuppath + $database + "_" + $timestamp +".sql"
+$checkLog = $checkPath + "check" + "_" + $database + "_" + "dump.log"
+$errorLog = $errorPath + "error" + "_" + $database + "_" + "dump.log"
+$backupfile = $backupPath + $database + "_" + $timestamp +".sql"
 
 ######################################## Mail info ########################################
-$Recipient = "launay.ronan@gmail.com"
-$Subject = "MySQL Backup sur le serveur 1234"
+$Recipient = "BAL@provider.tld"
+$Subject = "MySQL Backup sur A01620"
 $Body = "le backup de la base a bien ete effectue"
-$Smtpserver = "smtprelay.domaine.tld"
+$Smtpserver = "serversmtp.domain.tld"
 $Sender = "backupmysql@provider.tld"
 
 ######################################## Script ###########################################
-cd $mysqlpath 
+cd $mysqlPath 
 
-foreach ($database in $table_databases)
+foreach ($database in $tableDatabases)
 {
-$backupfile = $backuppath + $database + "_" + $timestamp +".sql"
-.\mysqldump.exe --user=$username --password=$password --host=$hostname --log-error=$errorlog --databases $database --result-file=$backupfile
-If (test-path ($backupfile))
+.\mysqlcheck.exe --user=$username --password=$password --host=$hostname -c $database | Out-File $checkLog
+
+If (test-path ($checkLog))
 {
-$text = "la base de donnees $database a bien ete sauvegardee"
+$textCheck = "la base de donnees $database est bien coherente"
 }
 else 
 {
-$text = "la base de donnees $database n a pas pu etre sauvegardee"
+$textCheck = "la base de donnees $database n est pas coherente"
 }
-$Body = "$Body `n$text"
+$Body = "$Body `n`n$textCheck"
+
+$checkLog = $checkPath + "check" + "_" + $database + "_" + "dump.log"
+$errorLog = $errorPath + "error" + "_" + $database + "_" + "dump.log"
+$backupfile = $backupPath + $database + "_" + $timestamp +".sql"
+
+.\mysqldump.exe --user=$username --password=$password --host=$hostname --log-error=$errorLog --databases $database --result-file=$backupfile
+If (test-path ($backupfile))
+{
+$textDump = "la base de donnees $database a bien ete sauvegardee"
+}
+else 
+{
+$textDump = "la base de donnees $database n a pas pu etre sauvegardee"
+}
+$Body = "$Body `n`n$textDump"
 $database = 0
 }
+
 Send-MailMessage -To $Recipient -Subject $Subject -Body $Body -SmtpServer $Smtpserver -From $Sender
 
-cd $backuppath
+cd $backupPath
 $oldbackups = gci *.sql
 
 for($i=0; $i -lt $oldbackups.count; $i++){
