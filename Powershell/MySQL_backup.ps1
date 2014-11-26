@@ -1,3 +1,4 @@
+
 ######################################## Time info ########################################
 $date = Get-Date
 $timestamp = Get-Date -format yyyyMMdd-HHmmss
@@ -5,8 +6,6 @@ $timestamp = Get-Date -format yyyyMMdd-HHmmss
 ######################################## Database info ####################################
 $tableDatabases = @("test1","test2","test3","test4","test5")
 $database = 0
-$textCheck = 0
-$textDump = 0
 
 ######################################## Connect info #####################################
 $mysqlPath = "C:\Program Files\MySQL\MySQL Server 5.5\bin\"
@@ -23,24 +22,19 @@ $errorLog = $errorPath + "error" + "_" + $database + "_" + "dump.log"
 $backupfile = $backupPath + $database + "_" + $timestamp +".sql"
 
 ######################################## Mail info ########################################
-$Recipient = "mail@provider.tld"
+$Recipient = "serviceaccount@provider.tld"
 $Subject = "MySQL Backup"
-$Smtpserver = "smtp.domain.tld"
-$Sender = "account@provider.tld"
+$Smtpserver = "smtpserver.company.com"
+$Sender = "backupaccount@provider.tld"
 
 $strBody = @"
 <html>
 <body>
-<tr>
-<td>
 $(date) : 
-</td>
-<td>
 Le backup des bases de donnes sur le serveur commence. <br>
-</td>
-</tr>
 </body>
 </html>
+<br>
 "@
 
 ######################################## Script ###########################################
@@ -66,11 +60,11 @@ $backupfile = $backupPath + $database + "_" + $timestamp +".sql"
 
 If (test-path ($backupfile))
 {
-$strBody += "$(date) : la base de donnees <font color=red>$database</font> a bien ete sauvegardee<br>"
+$strBody += "$(date) : la base de donnees <font color=red>$database</font> a bien ete sauvegardee<br><br>"
 }
 else
 {
-$strBody += "$(date) : la base de donnees <font color=red>$database</font> n a pas pu etre sauvegardee<br>"
+$strBody += "$(date) : la base de donnees <font color=red>$database</font> n a pas pu etre sauvegardee<br><br>"
 }
 $database = 0
 }
