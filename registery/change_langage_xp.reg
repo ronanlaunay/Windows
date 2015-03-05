@@ -1,0 +1,18 @@
+Windows Registry Editor Version 5.00 
+
+[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Language] 
+"InstallLanguage"="0409" 
+"Default"="0409" 
+
+[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Windows] 
+"CSDVersion"=dword:00000200 
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Nls\Language] 
+"InstallLanguage"="0409" 
+"Default"="0409" 
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Windows] 
+"CSDVersion"=dword:00000200 
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion] 
+"CSDVersion"="Service Pack 2" 
